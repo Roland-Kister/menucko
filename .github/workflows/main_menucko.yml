@@ -42,12 +42,8 @@ jobs:
           wget -O - https://notesalexp.org/debian/alexp_key.asc | sudo apt-key add -
           sudo apt update
           sudo apt install -y libleptonica-dev libtesseract-dev
-
-      - name: 'Tmp: list files'
-        shell: bash
-        run: |
-          dpkg -L libleptonica-dev
-          dpkg -L libtesseract-dev
+          cp /usr/lib/x86_64-linux-gnu/libleptonica.so ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/x64/leptonica-1.82.0.so
+          cp /usr/lib/x86_64-linux-gnu/libtesseract.so ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/x64/tesseract50.so
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
