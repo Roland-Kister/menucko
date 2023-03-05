@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './Source/Menucko/' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Source/Menucko/' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
 
 jobs:
@@ -31,6 +31,11 @@ jobs:
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output --os linux
           popd
+
+      - name: 'Copy Tesseract .dll files to output'
+        shell: bash
+        run: |
+          cp ~/.nuget/packages/tesseract/5.2.0/x64/* ./output/
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
