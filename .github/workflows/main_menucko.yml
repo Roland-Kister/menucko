@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy dotnet core project to Azure Function App - menucko
+name: Build and deploy dotnet core app to Azure Function App - menucko
 
 on:
   push:
@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Source/Menucko/' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v2
@@ -26,24 +26,11 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
-        shell: bash
+        shell: pwsh
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output --os linux
+          dotnet build --configuration Release --output ./output
           popd
-
-      - name: 'Install Leptonica and Tesseract'
-        shell: bash
-        run: |
-          sudo apt install apt-transport-https
-          sudo tee /etc/apt/sources.list.d/notesalexp.list<<EOF
-          deb https://notesalexp.org/tesseract-ocr5/$(lsb_release -cs)/ $(lsb_release -cs) main
-          EOF
-          wget -O - https://notesalexp.org/debian/alexp_key.asc | sudo apt-key add -
-          sudo apt update
-          sudo apt install -y libleptonica-dev libtesseract-dev
-          cp /usr/lib/x86_64-linux-gnu/libleptonica.so ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/bin/x64/libleptonica-1.82.0.so
-          cp /usr/lib/x86_64-linux-gnu/libtesseract.so ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/bin/x64/tesseract50.so
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
@@ -52,4 +39,4 @@ jobs:
           app-name: 'menucko'
           slot-name: 'Production'
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E81EE1EC55754C3DB2530CBAA47BEE0F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9C6FDBFDAC0D4B84A3B872239F24465E }}
