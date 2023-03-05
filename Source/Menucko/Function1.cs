@@ -17,20 +17,22 @@ namespace Menucko
         [FunctionName("Function1")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log, ExecutionContext context)
         {
+            var assetsPath = Path.Combine(context.FunctionAppDirectory, "Assets");
+
             var builder = new StringBuilder();
 
-            var directoryContent = Directory.GetFiles("./Assets");
+            var directoryContent = Directory.GetFiles(assetsPath);
 
             foreach (var file in directoryContent)
             {
                 log.LogInformation(file);
             }
 
-            using (var engine = new TesseractEngine(@"./Assets", "slk", EngineMode.Default))
+            using (var engine = new TesseractEngine(assetsPath, "slk", EngineMode.Default))
             {
-                using (var img = Pix.LoadFromFile("./Assets/lindy_hop.jpg"))
+                using (var img = Pix.LoadFromFile(Path.Combine(assetsPath, "lindy_hop.jpg")))
                 {
                     using (var page = engine.Process(img))
                     {
