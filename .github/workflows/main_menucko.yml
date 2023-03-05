@@ -41,7 +41,7 @@ jobs:
           EOF
           wget -O - https://notesalexp.org/debian/alexp_key.asc | sudo apt-key add -
           sudo apt update
-          sudo apt install -y libleptonica-dev=1.82.0 libtesseract-dev=5.2.0
+          sudo apt install -y libleptonica-dev libtesseract-dev
 
       - name: 'Tmp: list files'
         shell: bash
