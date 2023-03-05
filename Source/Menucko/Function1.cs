@@ -21,6 +21,13 @@ namespace Menucko
         {
             var builder = new StringBuilder();
 
+            var directoryContent = Directory.GetFiles("./Assets");
+
+            foreach (var file in directoryContent)
+            {
+                log.LogInformation(file);
+            }
+
             using (var engine = new TesseractEngine(@"./Assets", "slk", EngineMode.Default))
             {
                 using (var img = Pix.LoadFromFile("./Assets/lindy_hop.jpg"))
@@ -52,7 +59,7 @@ namespace Menucko
 
                                             var line = iter.GetText(PageIteratorLevel.Word);
                                             builder.Append(line);
-                                            Console.Write(text);
+                                            Console.Write(line);
                                             Console.Write(" ");
 
                                             if (iter.IsAtFinalOf(PageIteratorLevel.TextLine, PageIteratorLevel.Word))
