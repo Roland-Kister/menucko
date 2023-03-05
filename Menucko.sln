@@ -9,14 +9,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{5FF53D
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Release|Any CPU.Build.0 = Release|Any CPU
+		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Debug|x64.ActiveCfg = Debug|x64
+		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Debug|x64.Build.0 = Debug|x64
+		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Release|x64.ActiveCfg = Release|x64
+		{946B37AD-9C9D-4FC2-A043-1DD60A6C7220}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
