@@ -35,7 +35,7 @@ jobs:
       - name: 'Copy Tesseract .dll files to output'
         shell: bash
         run: |
-          cp ~/.nuget/packages/tesseract/5.2.0/x64/* ./output/
+          cp ~/.nuget/packages/tesseract/5.2.0/x64/* ./${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
