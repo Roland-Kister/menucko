@@ -34,7 +34,10 @@ jobs:
 
       - name: 'Install Leptonica and Tesseract'
         shell: bash
-        run: sudo apt install -y libleptonica-dev=1.82.0 libtesseract-dev=5.2.0
+        run: |
+          echo "deb https://notesalexp.org/tesseract-ocr5/$(lsb_release -cs)/ $(lsb_release -cs) main" sudo tee /etc/apt/sources.list.d/notesalexp.list > /dev/null
+          sudo apt update
+          sudo apt install -y libleptonica-dev=1.82.0 libtesseract-dev=5.2.0
 
       - name: 'Tmp: list files'
         shell: bash
