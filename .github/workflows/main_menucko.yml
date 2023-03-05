@@ -32,16 +32,15 @@ jobs:
           dotnet build --configuration Release --output ./output --os linux
           popd
 
-      - name: 'Copy Tesseract .dll files to output'
+      - name: 'Install Leptonica and Tesseract'
         shell: bash
-        run: |
-          cp ~/.nuget/packages/tesseract/5.2.0/x64/* ./${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/
+        run: sudo apt install -y libleptonica-dev=1.82.0 libtesseract-dev=5.2.0
 
-      - name: 'List files'
+      - name: 'Tmp: list files'
         shell: bash
         run: |
-          ls -al ~/.nuget/packages/tesseract/5.2.0/x64/*
-          ls -al ./${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output/
+          dpkg -L libleptonica-dev
+          dpkg -L libtesseract-dev
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
