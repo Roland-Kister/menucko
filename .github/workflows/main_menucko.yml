@@ -29,7 +29,7 @@ jobs:
         shell: pwsh
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          Invoke-WebRequest -Uri 'https://github.com/tesseract-ocr/tessdata_fast/raw/main/slk.traineddata' -OutFile '.\Source\Menucko\Languages\slk.traineddata'
+          Invoke-WebRequest -Uri 'https://github.com/tesseract-ocr/tessdata_fast/raw/main/slk.traineddata' -OutFile '.\Languages\slk.traineddata'
           popd
 
       - name: 'Resolve Project Dependencies Using Dotnet'
