@@ -15,9 +15,8 @@ namespace Menucko
     public static class LindyHop
     {
         [FunctionName(nameof(LindyHop))]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "lindy-hop")] HttpRequest req,
-            ILogger log, ExecutionContext context)
+        public static async Task<IActionResult> GetMenu(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "lindy-hop")] HttpRequest req, ExecutionContext context)
         {
             var assetsPath = Path.Combine(context.FunctionAppDirectory, "Assets");
 
@@ -27,7 +26,7 @@ namespace Menucko
 
             foreach (var file in directoryContent)
             {
-                log.LogInformation(file);
+                // log.LogInformation(file);
             }
 
             using (var engine = new TesseractEngine(assetsPath, "slk", EngineMode.Default))
@@ -84,7 +83,7 @@ namespace Menucko
                 }
             }
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            // log.LogInformation("C# HTTP trigger function processed a request.");
 
             string name = req.Query["name"];
 
