@@ -7,7 +7,7 @@ public class DateTimeUtil : IDateTimeUtil
 #if DEBUG
         return 1;
 #else
-        return (int)DateTime.Now.DayOfWeek + 1;
+        return (int)System.DateTime.Now.DayOfWeek + 1;
 #endif
     }
 }
