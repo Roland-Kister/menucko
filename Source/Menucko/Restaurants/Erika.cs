@@ -1,12 +1,12 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using Menucko.Models;
-using Menucko.Util.DateTime;
+using Menucko.Util.Date;
 using Menucko.Util.Html;
+using Menucko.Util.StringUtil;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -18,13 +18,15 @@ public class Erika
 {
     private const string MenuUrl = "https://www.bowlingerika.sk/";
 
-    private IHtmlUtil htmlUtil;
-    private IDateTimeUtil dateTimeUtil;
+    private readonly IHtmlUtil htmlUtil;
+    private readonly IDateUtil dateUtil;
+    private readonly IStringUtil stringUtil;
     
-    public Erika(IHtmlUtil htmlUtil, IDateTimeUtil dateTimeUtil)
+    public Erika(IHtmlUtil htmlUtil, IDateUtil dateUtil, IStringUtil stringUtil)
     {
         this.htmlUtil = htmlUtil;
-        this.dateTimeUtil = dateTimeUtil;
+        this.dateUtil = dateUtil;
+        this.stringUtil = stringUtil;
     }
     
     [FunctionName(nameof(Erika))]
@@ -32,9 +34,9 @@ public class Erika
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "erika")]
         HttpRequest req)
     {
-        var rawHtml = await htmlUtil.FetchDocument(MenuUrl);
+        var rawDocument = await htmlUtil.FetchDocument(MenuUrl);
         
-        var document = await htmlUtil.ParseDocument(rawHtml);
+        var document = await htmlUtil.ParseDocument(rawDocument);
         
         var menu = ParseMenu(document);
         
@@ -44,7 +46,7 @@ public class Erika
     private Menu ParseMenu(IParentNode document)
     {
         var menuSelector =
-            $"#obedove-menu .eael-tab-content-item:nth-of-type({dateTimeUtil.GetDayOfWeek()}) .elementor-widget-wd_menu_price";
+            $"#obedove-menu .eael-tab-content-item:nth-of-type({dateUtil.GetDayOfWeek()}) .elementor-widget-wd_menu_price";
         var menuEls = document.QuerySelectorAll(menuSelector);
 
         if (menuEls.Length == 0)
@@ -69,7 +71,7 @@ public class Erika
         return new Soup(name);
     }
     
-    private static MainCourse ParseMainCourse(IParentNode menuEl)
+    private MainCourse ParseMainCourse(IParentNode menuEl)
     {
         var nameEl = menuEl.QuerySelector(".menu-price-title span");
 
@@ -84,6 +86,7 @@ public class Erika
         var identifier = match.Groups[1].Value[..^1];
 
         name = Regex.Replace(name, @"Menu \d\) ?", "", RegexOptions.IgnoreCase);
+        name = stringUtil.RemoveVolumeInfo(name);
 
         var priceEl = menuEl.QuerySelector(".menu-price-price");
         var priceStr = priceEl.InnerHtml.Trim().Replace(',', '.')[..^2];

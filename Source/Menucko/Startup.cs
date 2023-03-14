@@ -1,5 +1,6 @@
-using Menucko.Util.DateTime;
+using Menucko.Util.Date;
 using Menucko.Util.Html;
+using Menucko.Util.StringUtil;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddHttpClient();
         
         builder.Services.AddSingleton<IHtmlUtil, HtmlUtil>();
-        builder.Services.AddSingleton<IDateTimeUtil, DateTimeUtil>();
+        builder.Services.AddSingleton<IDateUtil, DateUtil>();
+        builder.Services.AddSingleton<IStringUtil,StringUtil>();
     }
 }

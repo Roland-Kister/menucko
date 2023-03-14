@@ -1,12 +1,12 @@
-using System;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using Menucko.Models;
-using Menucko.Util.DateTime;
+using Menucko.Util.Date;
 using Menucko.Util.Html;
+using Menucko.Util.StringUtil;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -18,13 +18,15 @@ public class PizzaPizza
 {
     private const string MenuUrl = "https://www.pizza-pizza.sk/menu---terasa";
 
-    private IHtmlUtil htmlUtil;
-    private IDateTimeUtil dateTimeUtil;
+    private readonly IHtmlUtil htmlUtil;
+    private readonly IDateUtil dateUtil;
+    private readonly IStringUtil stringUtil;
 
-    public PizzaPizza(IHtmlUtil htmlUtil, IDateTimeUtil dateTimeUtil)
+    public PizzaPizza(IHtmlUtil htmlUtil, IDateUtil dateUtil, IStringUtil stringUtil)
     {
         this.htmlUtil = htmlUtil;
-        this.dateTimeUtil = dateTimeUtil;
+        this.dateUtil = dateUtil;
+        this.stringUtil = stringUtil;
     }
 
     [FunctionName(nameof(PizzaPizza))]
@@ -32,9 +34,9 @@ public class PizzaPizza
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "pizza-pizza")]
         HttpRequest req)
     {
-        var rawHtml = await htmlUtil.FetchDocument(MenuUrl);
+        var rawDocument = await htmlUtil.FetchDocument(MenuUrl);
 
-        var document = await htmlUtil.ParseDocument(rawHtml);
+        var document = await htmlUtil.ParseDocument(rawDocument);
 
         var menu = ParseMenu(document);
 
@@ -43,7 +45,7 @@ public class PizzaPizza
 
     private Menu ParseMenu(IParentNode document)
     {
-        var menuSelector = $"#ObedoveMenuu .menuCategory:nth-of-type({dateTimeUtil.GetDayOfWeek()}) .menuItemBox";
+        var menuSelector = $"#ObedoveMenuu .menuCategory:nth-of-type({dateUtil.GetDayOfWeek()}) .menuItemBox";
         var menuEls = document.QuerySelectorAll(menuSelector);
 
         if (menuEls.Length == 0)
@@ -58,38 +60,29 @@ public class PizzaPizza
         return new Menu(soup, mainCourses);
     }
 
-    private static Soup ParseSoup(IParentNode menuEl)
+    private Soup ParseSoup(IParentNode menuEl)
     {
         var nameEl = menuEl.QuerySelector(".menuItemDesc p:first-of-type");
-        var name = DeleteNbsp(nameEl.InnerHtml);
-        name = DeleteAllergens(name);
+        var name = stringUtil.RemoveNbsp(nameEl.InnerHtml);
+        name = stringUtil.RemoveAllergens(name);
 
         return new Soup(name);
     }
 
-    private static MainCourse ParseMainCourse(IParentNode menuEl)
+    private MainCourse ParseMainCourse(IParentNode menuEl)
     {
         var identifierEl = menuEl.QuerySelector(".menuItemName");
-        var identifier = DeleteNbsp(identifierEl.InnerHtml);
+        var identifier = stringUtil.RemoveNbsp(identifierEl.InnerHtml);
 
         var nameEl = menuEl.QuerySelector(".menuItemDesc p:last-of-type");
-        var name = DeleteNbsp(nameEl.InnerHtml);
-        name = DeleteAllergens(name);
+        var name = stringUtil.RemoveNbsp(nameEl.InnerHtml);
+        name = stringUtil.RemoveAllergens(name);
+        name = stringUtil.RemoveVolumeInfo(name);
 
         var priceEl = menuEl.QuerySelector(".menuItemPrice");
-        var priceStr = DeleteNbsp(priceEl.InnerHtml).Trim()[..^1];
+        var priceStr = stringUtil.RemoveNbsp(priceEl.InnerHtml).Trim()[..^1];
         var price = double.Parse(priceStr, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
 
         return new MainCourse(identifier, name, price);
-    }
-
-    private static string DeleteNbsp(string value)
-    {
-        return Regex.Replace(value, @"&nbsp;", "");
-    }
-    
-    private static string DeleteAllergens(string value)
-    {
-        return Regex.Replace(value, @" ?\/[\d ,]+\/", "");
     }
 }
